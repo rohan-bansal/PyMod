@@ -23,10 +23,10 @@ gameDisplay = ""
 
 clock = pygame.time.Clock()
 
-def set_window(title, widthInput, heightInput):
-    global gameDisplay, disp_width, disp_height
+def set_window(title, xInput, yInput):
+    global gameDisplay
 
-    gameDisplay = pygame.display.set_mode((widthInput, heightInput))
+    gameDisplay = pygame.display.set_mode((xInput, yInput))
     pygame.display.set_caption(title)
     pygame.display.flip()
 
