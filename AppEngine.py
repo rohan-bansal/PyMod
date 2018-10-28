@@ -41,7 +41,7 @@ class keyboard():
         self.activeKeys = pygame.key.get_pressed()
     
     def singlePress(self, key):
-        foundPress = False
+        foundKeyPressed = False
         for iterEvent in pygame.event.get():
             if iterEvent.type == pygame.KEYDOWN and iterEvent.key == key:
                 foundKeyPressed = True
