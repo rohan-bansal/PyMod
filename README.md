@@ -1,6 +1,8 @@
 # PygameEngine
 A useful game engine to create applications easily in pygame.
 
+For a full tutorial and function descriptions, head over to the [wiki](https://github.com/Rohan-Bansal/PygameEngine/wiki)
+
 ## Features
 
 - Pygame initialization and window creation
