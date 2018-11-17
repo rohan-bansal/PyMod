@@ -23,10 +23,10 @@ gameDisplay = ""
 
 clock = pygame.time.Clock()
 
-def set_window(title, xInput, yInput):
-    global gameDisplay
+def set_window(title, widthInput, heightInput):
+    global gameDisplay, disp_width, disp_height
 
-    gameDisplay = pygame.display.set_mode((xInput, yInput))
+    gameDisplay = pygame.display.set_mode((widthInput, heightInput))
     pygame.display.set_caption(title)
     pygame.display.flip()
 
@@ -127,7 +127,15 @@ class sprite():
         self.edgeTop = self.y
         self.edgeBottom = self.y + self.height
 
+        self.HP = 0
+
         sprites.append(self)
+
+    def setHP(self, number):
+        self.HP = number
+
+    def modifyImage(self, image):
+        self.main = pygame.image.load(os.path.dirname(os.path.abspath(__file__)) + "/" + image)
 
     def hide(self):
         self.visible = False
@@ -144,6 +152,12 @@ class sprite():
         if self.visible == True:
             if self.backG == False:
                 gameDisplay.blit(self.main, (self.x,self.y))
+
+    def inBorder(self):
+        if self.edgeLeft > 0:
+            if self.edgeRight < disp_width():
+                return True
+        return False
 
     def collide(self, otherSprite):
         if otherSprite == None:
