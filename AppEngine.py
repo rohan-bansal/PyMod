@@ -1,7 +1,11 @@
-# Created by: Rohan Bansal
+# Coded by: Rohan Bansal, 2018
+# https://github.com/Rohan-Bansal
 
-import pygame, sys, os
-from pygame.locals import *
+import contextlib, sys, os
+
+with contextlib.redirect_stdout(None):
+    import pygame
+    from pygame.locals import *
 
 pygame.init()
 
@@ -29,6 +33,7 @@ def set_window(title, widthInput, heightInput):
     gameDisplay = pygame.display.set_mode((widthInput, heightInput))
     pygame.display.set_caption(title)
     pygame.display.flip()
+
 
 def disp_width():
     return pygame.display.get_surface().get_size()[0]
@@ -81,7 +86,6 @@ class text():
 
         self.textFont = pygame.font.Font("freesansbold.ttf", sizeInput)
         self.textSurface = self.textFont.render(string, True, colorInput)
-
         self.textString = string
         self.size = sizeInput
         self.color = colorInput
@@ -100,23 +104,41 @@ class text():
         if self.visible == True:
             gameDisplay.blit(self.textSurface, (self.x, self.y))
 
+    def changeSize(self, size):
+        self.size = size
+        self.textFont = pygame.font.Font("freesansbold.ttf", size)
+
     def changeText(self, stringInput, colorInput):
+        self.textString = stringInput
+        self.color = colorInput
         self.textSurface = self.textFont.render(stringInput, True, colorInput)
+
+    def changeFont(self, font):
+        self.textFont = pygame.font.Font(font, self.size)
+        self.textSurface = self.textFont.render(self.textString, True, self.color)
 
     def destroy(self):
         texts.remove(self)
         del(self)
 
 class sprite():
-    def __init__(self, image, xInput, yInput, **background):
+    def __init__(self, image, xInput, yInput, id_, **background):
         if "background" in background:
             self.backG = True
         else:
             self.backG = False
+
+        if isinstance(image, str):
+            self.main = pygame.image.load(os.path.dirname(os.path.abspath(__file__)) + "/" + image)
+            self.isStr = True
+        else:
+            self.main = image
+            self.isStr = False
+        
         self.x = xInput
         self.y = yInput
         self.visible = True 
-        self.main = pygame.image.load(os.path.dirname(os.path.abspath(__file__)) + "/" + image)
+        self.id_ = id_
         self.width = self.main.get_rect().size[0]
         self.height = self.main.get_rect().size[1]
 
@@ -128,6 +150,10 @@ class sprite():
         self.edgeBottom = self.y + self.height
 
         self.HP = 0
+        self.HPtext = text("", 2, black, 0, 0)
+
+        self.inventory = []
+        self.description = ""
 
         sprites.append(self)
 
@@ -135,13 +161,20 @@ class sprite():
         self.HP = number
 
     def modifyImage(self, image):
-        self.main = pygame.image.load(os.path.dirname(os.path.abspath(__file__)) + "/" + image)
+        if self.isStr == True:
+            self.main = pygame.image.load(os.path.dirname(os.path.abspath(__file__)) + "/" + image)
+        else:
+            self.main = image
 
     def hide(self):
         self.visible = False
 
     def show(self):
-        self.visible = True
+        self.visible = True 
+
+    def moveToFront(self):
+        sprites.remove(self)
+        sprites.append(self)
 
     def update(self):
         self.edgeLeft = self.x
@@ -152,6 +185,12 @@ class sprite():
         if self.visible == True:
             if self.backG == False:
                 gameDisplay.blit(self.main, (self.x,self.y))
+
+    def drawHealthText(self, x, y, size, color, value):
+        self.HPtext.x = x
+        self.HPtext.y = y
+        self.HPtext.changeSize(size)
+        self.HPtext.changeText(value, color)
 
     def inBorder(self):
         if self.edgeLeft > 0:
@@ -170,6 +209,9 @@ class sprite():
                 return False
 
     def destroy(self):
+        self.HPtext.destroy()
+        self.main = None
+        self.rect = None
         sprites.remove(self)
         del(self)
 
@@ -185,14 +227,39 @@ class sprite():
     def moveLeft(self, speed):
         self.x -= speed
 
+class audio():
+    def __init__(self):
+        self.song = ""
+        self.SFX = "" 
+        pygame.mixer.init()
+    
+    def playMusic(self, song, loopParam): # 0 (once), -1 (indefinite)
+        self.song = song
+        pygame.mixer.music.load(song)
+        pygame.mixer.music.play(loopParam)
+
+    def QueueMusic(self, song):
+        pygame.mixer.music.queue(song)
+
+    def stopMusic(self):
+        self.song = ""
+        pygame.mixer.music.stop()
+
+    def playSound(self, sound):
+        self.SFX = pygame.mixer.Sound(sound)
+        self.SFX.play()
+        self.SFX = ""
+
 kb = keyboard()
 ms = mouse()
+au = audio()
 
 def quitClicked():
     for iterEvent in pygame.event.get():
         if iterEvent.type == pygame.QUIT:
             quit()
             exit()
+
 
 def gameLoop(background):
     if(isinstance(background, tuple)):
