@@ -1,7 +1,7 @@
 # PyMod
 A useful game engine to create applications easily in pygame.
 
-For a full tutorial and function descriptions, head over to the [wiki](https://github.com/Rohan-Bansal/PygameEngine/wiki)
+For a full tutorial and function descriptions, head over to the [wiki](https://github.com/Rohan-Bansal/PygameEngine/wiki). (keep in mind this has not been updated for the past few versions)
 
 ## Features
 
